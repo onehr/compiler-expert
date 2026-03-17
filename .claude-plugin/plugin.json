@@ -1,0 +1,8 @@
+{
+  "name": "compiler-expert",
+  "description": "20 specialist skills for compiler and language implementation — from lexer to linker, with decision frameworks, implementation checklists, and research-backed references",
+  "version": "1.0.0",
+  "author": {
+    "name": "onehr"
+  }
+}
