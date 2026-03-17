@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-parser",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to implement expression parsing for my language using a Pratt parser. My operator table (from lowest to highest precedence) is: assignment '=' (right-associative), logical 'or' and 'and', equality '==' and '!=', comparison '<' '>' '<=' '>=', addition '+' '-', multiplication '*' '/', unary '-' and '!', and postfix function calls like f(args). Can you walk me through how a Pratt parser handles this, specifically how binding powers encode precedence and associativity, and how prefix vs infix parse functions work?",
+      "expected_output": "Should explain the core Pratt mechanism: each token type has a left binding power (LBP) for infix use; the main parse loop advances while the next token's LBP is greater than the current right binding power; prefix vs null denotation handles unary/literal prefix positions; right-associativity is encoded by passing LBP-1 as the right binding power for right-recursive operators like '='. Should give concrete binding power numbers or a table, and explain why this avoids left-recursion problems.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the core Pratt loop: the parser advances consuming infix operators as long as the next token's left binding power exceeds the current minimum right binding power",
+          "type": "qualitative"
+        },
+        {
+          "text": "Distinguishes null denotation (nud / prefix position: literals, unary operators, parenthesized expressions) from left denotation (led / infix position: binary operators)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Correctly explains how right-associativity for '=' is encoded: pass a right binding power one less than the token's LBP when recursing, so the same precedence level is consumed again",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains that Pratt parsing handles operator precedence without left-recursion elimination or complex grammar rewrites — making it a natural fit for expression-heavy languages",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My recursive descent parser reports only the first syntax error and then stops. I know I need error recovery but I'm not sure how to implement it. My language uses semicolons to end statements and curly braces to delimit blocks. What's the best error recovery strategy for a recursive descent parser, and how do I actually implement synchronization points?",
+      "expected_output": "Should explain panic-mode recovery (discard tokens until a synchronization token is found), identify good synchronization tokens for this language (semicolons, closing braces, statement-opening keywords), explain how a synchronize() method works in recursive descent, mention that the parser should continue after recovery to report multiple errors, and contrast with phrase-level recovery (fragile) and error productions (complementary but heavier).",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Recommends panic-mode recovery as the right choice for a recursive descent parser — simple, effective, and standard",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the concrete synchronize() mechanism: discard tokens in a loop until hitting a token in the synchronization set (';', '}', or statement-starting keywords), then return control to the calling parse function",
+          "type": "qualitative"
+        },
+        {
+          "text": "Identifies appropriate synchronization tokens for the described language: semicolons (statement ends) and closing braces (block ends) and/or statement-opening keywords",
+          "type": "qualitative"
+        },
+        {
+          "text": "States that the goal is to report multiple errors in one pass — the parser should catch the error, call synchronize, and continue parsing rather than aborting after the first error",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

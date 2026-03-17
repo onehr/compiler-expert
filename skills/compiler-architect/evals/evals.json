@@ -1,0 +1,83 @@
+{
+  "skill_name": "compiler-architect",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我要为一门静态类型语言构建编译器，目标是 x86-64 Linux，语言有泛型和闭包，团队就我一个人，时间 3 个月。帮我做架构决策。",
+      "assertions": [
+        {
+          "text": "给出了明确的 IR 层次选择，并说明了被否决方案在什么条件下会失败（不只是说'这个方案更好'）",
+          "passed": false,
+          "evidence": ""
+        },
+        {
+          "text": "给出了构建策略选择（incremental bootstrap / full upfront / strangler fig 中的一个），并附带验证点",
+          "passed": false,
+          "evidence": ""
+        },
+        {
+          "text": "输出了至少一个阶段的交接合约（含 PAYLOAD 和 SUCCESS 条件）",
+          "passed": false,
+          "evidence": ""
+        },
+        {
+          "text": "明确将 compiler-lexer 指定为第一个实现步骤",
+          "passed": false,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm writing a C11 compiler in Rust targeting x86-64 Linux. I need to implement function call code generation. How should I handle struct arguments — when do they go in registers vs on the stack? What are the common pitfalls?",
+      "assertions": [
+        {
+          "text": "Explains the System V eightbyte classification algorithm (INTEGER / SSE / MEMORY classes) — not just 'large structs go on stack'",
+          "passed": false,
+          "evidence": ""
+        },
+        {
+          "text": "Mentions the hidden first argument pattern for MEMORY-class struct returns",
+          "passed": false,
+          "evidence": ""
+        },
+        {
+          "text": "Mentions 16-byte stack alignment requirement before call instruction",
+          "passed": false,
+          "evidence": ""
+        },
+        {
+          "text": "Gives at least one concrete pitfall with a specific symptom (not just 'be careful with ABI')",
+          "passed": false,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I'm designing a scripting language with mutable objects and closures. Users shouldn't manage memory manually. Should I implement GC or reference counting? If GC, how do I start implementing it?",
+      "assertions": [
+        {
+          "text": "Gives a concrete recommendation (GC or RC) with a specific tradeoff — not 'both are valid choices'",
+          "passed": false,
+          "evidence": ""
+        },
+        {
+          "text": "Explains the cycle problem with reference counting and mentions at least one solution (weak refs, cycle collector, etc.)",
+          "passed": false,
+          "evidence": ""
+        },
+        {
+          "text": "If recommending mark-and-sweep: explains the tri-color invariant (white/gray/black) or the basic algorithm",
+          "passed": false,
+          "evidence": ""
+        },
+        {
+          "text": "Gives a concrete 'first implementation step' — not just 'implement a GC', but what specifically to build first",
+          "passed": false,
+          "evidence": ""
+        }
+      ]
+    }
+  ]
+}

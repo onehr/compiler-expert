@@ -1,0 +1,82 @@
+[
+  {
+    "query": "I need to implement register allocation for my compiler's x86-64 backend. I have ~15 virtual registers in my IR but only 14 physical GPRs available (excluding rsp/rbp). Linear scan vs graph coloring — which one for a compiler that prioritizes compile speed?",
+    "should_trigger": true
+  },
+  {
+    "query": "my compiler targets a stack-based bytecode VM. I'm getting stack underflow errors in some edge cases — I think the issue is how I generate code for short-circuit && and ||. The left operand pushes a value but the right operand might not execute. How do I handle this?",
+    "should_trigger": true
+  },
+  {
+    "query": "implementing instruction selection for ARM64 in my compiler. Should I use a tree-pattern matching approach (BURS/BURG style) or just write a big match statement on my IR nodes? The language is relatively simple — no SIMD, mostly scalar integer and float ops",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to add NaN boxing to my bytecode VM for value representation. My language has doubles, 63-bit integers, bools, nil, and heap-allocated objects. How do I lay out the bit patterns? I've seen some VMs use the quiet NaN payload and some use the sign bit for tagging",
+    "should_trigger": true
+  },
+  {
+    "query": "my codegen emits correct code for simple functions but breaks on functions with more than 6 arguments. I think the issue is that I'm not handling stack-passed arguments correctly for the System V AMD64 calling convention. The first 6 go in rdi/rsi/rdx/rcx/r8/r9 right?",
+    "should_trigger": true
+  },
+  {
+    "query": "designing a register-based bytecode VM (like Lua 5.x or Dalvik). How many registers per frame is typical? And how do I handle function calls — do I need a separate register window like SPARC or just save/restore the caller's registers?",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to generate machine code for closures and upvalues. My language has first-class functions with lexical scoping. The tricky part is that a closure might capture a variable that's still on the stack. Do I need to heap-allocate captured variables?",
+    "should_trigger": true
+  },
+  {
+    "query": "trying to emit WASM bytecode from my compiler instead of native code. The WASM type system is more restrictive than I expected — no arbitrary gotos, structured control flow only. How do I lower my CFG-based IR to WASM's block/loop/br structure?",
+    "should_trigger": true
+  },
+  {
+    "query": "what's the standard way to implement a dispatch loop for a bytecode interpreter? I'm using a giant match statement in Rust right now but I've heard computed gotos are much faster. Can I do something equivalent in Rust or do I need unsafe?",
+    "should_trigger": true
+  },
+  {
+    "query": "my compiler needs to generate code for tagged unions (sum types / enums with data). How should I lay out the discriminant + payload in memory? I'm targeting x86-64 native code and want to minimize padding. Should the tag be 1 byte, 4 bytes, or size-dependent?",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to implement dead code elimination in my optimization pass. My IR is in SSA form. Do I use a mark-sweep approach starting from side-effectful instructions, or iterate to a fixed point removing unused definitions?",
+    "should_trigger": false
+  },
+  {
+    "query": "my parser isn't handling operator precedence correctly — `1 + 2 * 3` parses as `(1 + 2) * 3`. I think the issue is in my recursive descent rules for multiplicative vs additive expressions",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm generating TypeScript code from a Protobuf schema. Using protoc with ts-proto plugin but the generated types don't match what the backend expects. Is there a better code generation approach for protobuf + TypeScript?",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I use GitHub Copilot to generate boilerplate code faster? I'm writing a lot of CRUD endpoints and want the AI to fill in the repetitive parts",
+    "should_trigger": false
+  },
+  {
+    "query": "trying to implement garbage collection for my language runtime. I have a mark-and-sweep collector but it pauses for 50ms+ on large heaps. Should I switch to generational GC or try incremental marking?",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the best approach for generating PDF reports from data in Python? I've tried reportlab but the API is really verbose. weasyprint looks nicer but has a lot of system dependencies",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to implement the calling convention for my ABI — specifically how structs are passed by value. The System V AMD64 ABI says structs up to 16 bytes go in registers but I'm confused about the classification algorithm for structs with mixed int/float fields",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I set up Terraform to provision AWS infrastructure? I need an ECS cluster with auto-scaling, an RDS instance, and an ALB. The Terraform docs are overwhelming",
+    "should_trigger": false
+  },
+  {
+    "query": "my linker is failing with 'relocation truncated to fit' errors. I think the issue is that my code section is too far from the data section for 32-bit PC-relative relocations. Do I need to use the large code model or add a GOT?",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm building a source-to-source transpiler that converts Python to Rust. Not a full compiler, just translating the syntax — loops, functions, basic types. Should I work at the AST level or the token level?",
+    "should_trigger": false
+  }
+]

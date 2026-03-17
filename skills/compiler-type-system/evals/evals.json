@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-type-system",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm implementing Hindley-Milner type inference for a small ML-like language. I understand the basic concept of unification but I'm hitting two bugs: first, my occurs check seems to be optional and I'm not sure why it matters. Second, my let-polymorphism is wrong — when I have 'let id = fn x => x in (id 1, id true)', the second call fails because 'id' was specialized to Int from the first call. What's going wrong with my generalization, and how do I implement let-generalization correctly?",
+      "expected_output": "Should explain the occurs check (prevents infinite types from alpha unifying with f(alpha) — without it, unification loops forever or creates cyclic type structures), explain let-generalization (type variables free in the RHS type but NOT free in the environment are universally quantified, creating a type scheme), explain Remy's level-based optimization (attach nesting levels to type variables, generalize only vars with level > current let-level, avoids O(env) scan), and explain value restriction (only generalize syntactically-value RHS).",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Correctly explains the occurs check: without it, unifying a type variable 'a' with 'f(a)' would create an infinite type and cause the unifier to loop indefinitely",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the root cause of the let-polymorphism bug: the type variable for 'id' was unified with Int from the first use, making it monomorphic — generalization must produce a type scheme before the body is type-checked",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains correct let-generalization: after type-checking the RHS, universally quantify (with 'forall') all type variables that are free in the RHS type but not free in the current type environment",
+          "type": "qualitative"
+        },
+        {
+          "text": "Mentions Remy's level/rank optimization: attach a nesting depth to each type variable and generalize only variables whose level exceeds the current let-nesting depth, avoiding an O(size of environment) scan",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm building a language that compiles to C and I need to handle C's implicit type conversions (the 'usual arithmetic conversions'). When I write '1 + 2.0', the int needs to be widened to double before the addition. How do I represent and implement implicit coercions in my compiler, and where in the pipeline should I insert the explicit conversion nodes? Also, I want to understand: does this mean my language has subtyping, or is it something else?",
+      "expected_output": "Should explain that C-style implicit conversions are not subtyping (they insert actual conversion code, the types are genuinely distinct), explain the C widening hierarchy (char -> short -> int -> long -> float -> double), explain the two implementation strategies (insert conversion nodes early during type checking vs. keep implicit until a later elaboration pass), recommend the early-insertion approach with a lookup table per operator, and explain how to insert explicit coercion nodes into the AST/IR.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Clarifies that C implicit arithmetic conversions are NOT subtyping — they insert actual conversion/coercion code; the types int and double are distinct and a real widening operation occurs",
+          "type": "qualitative"
+        },
+        {
+          "text": "States the C widening rule: convert both operands to the narrowest type that can represent both, following the hierarchy char -> short -> int -> long -> float -> double",
+          "type": "qualitative"
+        },
+        {
+          "text": "Describes the two implementation strategies: (1) insert explicit conversion nodes early during type checking, or (2) keep coercions implicit in the IR and elaborate in a later pass — and gives a recommendation with rationale",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains concretely how to insert coercion nodes: when a binary operation has mismatched operand types, wrap the narrower operand in a Cast/Coerce AST or IR node encoding the target type",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

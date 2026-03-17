@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-macro",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm implementing a C preprocessor and I'm stuck on macro recursion. If I have `#define A B` and `#define B A`, my expander infinite-loops. I've read that the C standard uses something called a 'hideset' to prevent this. Can you explain exactly how the hideset mechanism works and how I should implement it?",
+      "expected_output": "Should explain that each token carries a hideset (a set of macro names that have already been expanded in the token's history). Before expanding a macro, check whether the macro's name is in the token's hideset — if so, skip expansion (the token is 'painted blue'). After expansion, stamp each result token with the macro name added to the hideset. For function-like macros, should explain the Dave Prosser algorithm: use the intersection of the opening token's hideset and the closing paren's hideset, then union with the macro name. Should explain why intersection is used (to handle nested function-like macro calls correctly). Should show how this handles mutual recursion: A expands to B (B now has A in its hideset), B tries to expand to A but finds A in the hideset, stops.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains that each token carries a hideset (a set/linked-list of macro names) and that expansion is skipped when the macro's name is already in the token's hideset — this is the 'blue paint' anti-recursion mechanism",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains that after expanding a macro, each token in the result body is stamped with the macro's name added to its hideset, propagating the paint to all result tokens",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the function-like macro case: the hideset stamped on result tokens uses the intersection of the function-token's hideset and the closing-paren's hideset, then unions in the macro name (the Dave Prosser / C standard algorithm)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Demonstrates (or describes) how the hideset terminates mutual recursion: e.g., `#define A B` / `#define B A` — first expansion of A produces B with A in its hideset; when B tries to expand A, it finds A in the hideset and stops",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm designing a new systems programming language and trying to decide whether to include a macro system (like Rust's `macro_rules!`) or a comptime facility (like Zig's `comptime`). What are the key differences, and in what situations does each approach shine? Is there a reason I might want both?",
+      "expected_output": "Should explain the core difference: macro_rules! is a syntactic/token-level pattern matching system that operates before type checking and produces AST; comptime is value-level computation that runs at compile time using the full type system. Should explain hygiene: macro_rules! is hygienic (SyntaxContext on identifiers prevents name capture); comptime does not have a hygiene problem because it generates values/types, not syntax. Should explain what each is good at: macros excel at syntactic abstraction (variadic argument lists, DSLs, code generation by pattern); comptime excels at type-level programming, generics, conditional compilation. Should explain what macros cannot do that comptime can: type-aware code generation, reflection via @typeInfo. Should explain what comptime cannot do that macros can: introduce new syntax patterns. Should argue that Zig's answer (comptime only, no macros) works because comptime subsumes most macro use cases.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Correctly identifies the fundamental difference in what each operates on: token-tree macros (macro_rules!) pattern-match on syntax before type checking; comptime executes ordinary typed code at compile time, with full access to type information",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains hygiene in the context of token macros: macro_rules! uses SyntaxContext (or equivalent) to mark identifiers introduced in the macro body so they don't capture names at the call site — this problem does not arise with comptime because comptime produces values, not syntax",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains what comptime enables that syntactic macros cannot easily do: type-aware code generation, compile-time reflection (inspecting struct fields, type info), and generics as ordinary parameterized functions returning types",
+          "type": "qualitative"
+        },
+        {
+          "text": "Makes a concrete design recommendation or explains the trade-off: e.g., Zig shows that comptime alone can replace most macro uses (generics, conditional compilation, assertions); a language can omit macros entirely if comptime is sufficiently powerful",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

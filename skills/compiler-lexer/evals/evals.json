@@ -1,0 +1,57 @@
+{
+  "skill_name": "compiler-lexer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm building a compiler for a new systems language in Rust. The language has the usual C-like tokens: keywords (fn, let, if, else, while, return, struct), identifiers, integer/float literals, string literals, and multi-character operators (==, !=, <=, >=, ->, ::). I need to decide whether to hand-code the lexer or use the Logos generator crate. What do I actually gain or lose with each approach, and how should I handle the keyword-vs-identifier problem?",
+      "expected_output": "Should give a concrete recommendation (hand-code vs Logos with clear rationale), explain both keyword handling strategies (separate rule per keyword vs scan as identifier then hash table lookup), explain why the hash table approach is preferred over encoding keywords in the DFA, address token representation (span rather than copying the string), and mention maximal munch for multi-character operators.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Gives a concrete, justified recommendation between hand-coding and using Logos — not a non-committal 'either works'",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains both keyword handling strategies: (1) separate rule/pattern per keyword, and (2) scan as identifier then perform a hash-table or match lookup to reclassify",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains why encoding keywords directly in the DFA is problematic — bloated/unmaintainable — and recommends the post-scan symbol table lookup approach",
+          "type": "qualitative"
+        },
+        {
+          "text": "Addresses token representation: recommends storing a byte offset span (start, length) into the source rather than copying lexeme strings into every token",
+          "type": "qualitative"
+        },
+        {
+          "text": "Mentions maximal munch for multi-character operators — e.g., how '->' vs '-' and '=' is distinguished, or how '>=' is not tokenized as '>' then '='",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My hand-coded lexer for a Python-like language is producing wrong tokens in a few edge cases. First, it tokenizes '>>=' as '>' '>' '=' instead of the right-shift-assign operator. Second, when it hits an unrecognized character like '@' (which isn't yet in the language), it aborts with a panic. Third, I'm storing the full string slice of each lexeme in the Token struct and my memory usage seems high. How do I fix all three of these issues?",
+      "expected_output": "Should explain maximal munch as the root cause of the first bug and how to fix it (consume greedily then back up, or check for longer matches before accepting a token), explain error recovery (emit an error token or skip and continue — never abort on a single bad character so all lexical errors are reported in one pass), and explain span-based token representation as the solution to the memory problem.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Correctly diagnoses the '>>=' bug as a maximal munch violation — the scanner stopped at the first valid token rather than preferring the longest match — and explains how to fix it",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the correct error recovery policy: on an unrecognized character, report the error, emit an error token or skip the character, and continue scanning rather than aborting",
+          "type": "qualitative"
+        },
+        {
+          "text": "States that aborting on the first lexical error is wrong — the scanner should collect all errors in a single pass so the user sees all problems at once",
+          "type": "qualitative"
+        },
+        {
+          "text": "Recommends replacing full lexeme string storage with a span (byte offset + length or start/end indices) into the source buffer, since the source is already in memory",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

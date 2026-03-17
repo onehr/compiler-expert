@@ -1,0 +1,82 @@
+[
+  {
+    "query": "I'm implementing operator precedence parsing for my language. It has about 20 operators including ternary (?:), pipe (|>), and range (..). Pratt parsing seems like the way to go but I'm confused about how to handle prefix vs postfix operators with the same token (like unary minus vs binary minus)",
+    "should_trigger": true
+  },
+  {
+    "query": "my recursive descent parser can't handle left-recursive rules. The grammar has `expr := expr '+' term | term` which causes infinite recursion. I know I need to rewrite it but what's the standard transformation? Do I lose associativity information?",
+    "should_trigger": true
+  },
+  {
+    "query": "trying to decide between writing a hand-rolled recursive descent parser vs using a parser generator like LALRPOP or pest. my language is similar to Rust in complexity (generics with <>, closures, pattern matching). which approach will cause me less pain?",
+    "should_trigger": true
+  },
+  {
+    "query": "how should I design my AST nodes? Right now I have one big enum with 40+ variants and it's getting unwieldy. I've seen some compilers use separate types for Expression, Statement, Pattern etc. What's the idiomatic approach in Rust?",
+    "should_trigger": true
+  },
+  {
+    "query": "my parser crashes on invalid input instead of recovering and reporting multiple errors. Users hate getting one error at a time. How do production parsers like clang or rustc do error recovery? I've heard of 'synchronization tokens' and 'panic mode' but not sure how to implement them",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to parse C's type declaration syntax and it's driving me crazy. `int (*(*f)(int))(double)` — function pointer returning function pointer. Is there a clean algorithm for parsing C declarators or is the 'spiral rule' the best we've got?",
+    "should_trigger": true
+  },
+  {
+    "query": "implementing the Visitor pattern for my AST in Rust. I have ~30 node types and need multiple passes (type checking, codegen, pretty printing). Should I use trait objects, enums with match, or the visitor-rs crate? Fighting the borrow checker with trait-based visitors",
+    "should_trigger": true
+  },
+  {
+    "query": "my parser needs to handle ambiguous grammar — `f(x)` could be a function call or a type cast depending on whether `f` is a function name or a type name. C has this exact problem. How do I resolve this without doing a full name resolution pass in the parser?",
+    "should_trigger": true
+  },
+  {
+    "query": "what's a good approach for parsing indentation-sensitive syntax like Python or Haskell? I want my language to use significant whitespace for blocks instead of braces. Do I handle this in the lexer with INDENT/DEDENT tokens or in the parser?",
+    "should_trigger": true
+  },
+  {
+    "query": "building a Pratt parser and I'm stuck on how to handle the ternary conditional operator (a ? b : c). It doesn't fit neatly into the left-denotation / null-denotation model because the middle expression resets precedence. How do other Pratt parsers handle this?",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm tokenizing a programming language and my lexer can't handle nested block comments /* /* inner */ outer */. The comment-end check stops at the first */ and leaves garbage. Need a nesting counter in the scanner",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I implement Hindley-Milner type inference for my language? I have the AST ready and now need to add let-polymorphism with proper generalization. Should I use Algorithm W or Algorithm J?",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to parse command-line arguments in my Rust CLI tool. Should I use clap v4 with derive macros or build the argument parser manually? The tool has about 15 flags and 3 subcommands",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm using serde to parse YAML config files in Rust. The deserialization fails silently when a required field is missing — how do I get better error messages with field names and line numbers?",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I write a good error message for a type mismatch? I want to show the expected type, the actual type, and point to where the conflict originated — similar to how Elm does it with those nice human-readable errors",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to parse mathematical expressions from user input in a calculator app. Just basic arithmetic (+, -, *, /, parentheses) and maybe some functions like sin/cos. Nothing fancy, just a weekend project",
+    "should_trigger": false
+  },
+  {
+    "query": "building a markdown parser that converts to HTML. I need to handle nested lists, code blocks, tables, and inline formatting. Should I use a PEG grammar or just do it procedurally?",
+    "should_trigger": false
+  },
+  {
+    "query": "my compiler's code generator is producing incorrect x86-64 for struct field access. The offsets are wrong when the struct has padding. I think I need to compute the layout with alignment rules first — where does that logic live?",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to add LSP support (go-to-definition, hover, completions) to my language. The parser needs to produce a lossless syntax tree that preserves whitespace and comments. Is rowan (rust-analyzer's library) the right choice?",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I write a SQL parser? I need to parse SELECT/INSERT/UPDATE/DELETE for a database query engine I'm building. SQL grammar is pretty complex with all the optional clauses",
+    "should_trigger": false
+  }
+]

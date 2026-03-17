@@ -1,0 +1,82 @@
+[
+  {
+    "query": "I want to build a statically-typed language that compiles to native code. It should have algebraic data types, pattern matching, and a Hindley-Milner type system. What's the right architecture? How many IR layers do I need?",
+    "should_trigger": true
+  },
+  {
+    "query": "we're starting a new compiler project at work — it's a domain-specific language for financial modeling. right now we have a rough grammar but no code yet. what should the overall pipeline look like? we're a team of 3 and want to ship an MVP in 6 months",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm torn between targeting LLVM, Cranelift, or just writing my own bytecode VM. My language is garbage-collected with closures and coroutines. What are the tradeoffs? Compile speed matters a lot for us",
+    "should_trigger": true
+  },
+  {
+    "query": "should I use a single-pass or multi-pass architecture for my C compiler? I know single-pass is simpler but I'm worried about forward references and I want to do some basic optimizations later",
+    "should_trigger": true
+  },
+  {
+    "query": "how should I organize the crate structure for a Rust-based compiler? Right now everything is in one big lib.rs and it's getting unwieldy at 15k lines. I'm thinking separate crates for parsing, type checking, and codegen but not sure about the boundaries",
+    "should_trigger": true
+  },
+  {
+    "query": "I have a working interpreter for my language but now I want to add a compilation step. Do I need to redesign everything or can I incrementally add a compiler backend to my existing tree-walking evaluator?",
+    "should_trigger": true
+  },
+  {
+    "query": "what order should I implement the phases of my compiler in? I keep going back and forth between getting the type system right first vs getting basic codegen working first so I can test things end to end",
+    "should_trigger": true
+  },
+  {
+    "query": "designing a new language for embedded systems — no heap allocation, no GC, everything stack-allocated or static. Need to figure out the compilation strategy. Should I do something Zig-like with comptime or more like Rust with lifetimes?",
+    "should_trigger": true
+  },
+  {
+    "query": "planning a rewrite of our internal DSL compiler. the current one is Python-based and too slow. thinking about rewriting in Rust with a proper multi-stage pipeline. before I start, what are the key architectural decisions I should make upfront?",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to decide between a query-based architecture (like rustc/salsa) vs a traditional pass-based pipeline for my compiler. The language will eventually need IDE support (completions, go-to-def). Does that change the answer?",
+    "should_trigger": true
+  },
+  {
+    "query": "my Pratt parser is giving me the wrong precedence for the ternary operator. The expression `a ? b : c ? d : e` should right-associate but it's parsing as `(a ? b : c) ? d : e`. How do I fix the precedence table?",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to implement register allocation for my x86-64 backend. Should I use linear scan or graph coloring? The language doesn't have many live variables at once — usually 5-8 at most",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I design the architecture for a microservices system? We have 12 services and I need to figure out the right communication patterns — REST vs gRPC vs event-driven",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the best project structure for a large Next.js application? We have about 50 pages and the src/ directory is getting messy",
+    "should_trigger": false
+  },
+  {
+    "query": "my lexer can't handle nested block comments like /* /* inner */ outer */. It stops at the first */ and then the rest of the file becomes garbage. Need to add a nesting counter I think?",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm working on a software architecture document for our team. We're building a new e-commerce platform and I need to decide between monolith vs microservices",
+    "should_trigger": false
+  },
+  {
+    "query": "trying to optimize our PostgreSQL queries — some of them take 30+ seconds. I've looked at the EXPLAIN ANALYZE output and there's a sequential scan on a 10M row table. Should I add an index or restructure the query?",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the right way to structure a Rust workspace with multiple binaries and a shared library crate? I have a CLI tool, a web server, and they share some common types",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to implement dead code elimination in my optimizer pass. The IR is in SSA form. What's the standard algorithm — do I start from uses and work backwards, or mark everything as dead and then mark reachable things live?",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I set up the build system for a compiler project? Should I use cargo workspaces, a Makefile, or something like just? I want incremental builds and the ability to run specific test suites",
+    "should_trigger": false
+  }
+]

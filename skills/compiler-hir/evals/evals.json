@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-hir",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My compiler currently has just an AST and I'm writing the type checker and borrow checker directly against it. The AST has ForExpr, WhileLetExpr, IfLetExpr, TryExpr nodes, and my analysis passes keep needing to special-case all of these. A colleague suggested I add a HIR layer. When is that actually worth the complexity cost, and what does the HIR buy me concretely?",
+      "expected_output": "Should explain the concrete benefits of a HIR: desugaring reduces the AST's many forms to a smaller canonical set (for-loop -> loop+match, while-let -> loop+if, if-let -> match, ? -> match+return), meaning analysis passes need far fewer special cases. Should explain stable HirId for cross-pass references (type table, borrow checker, IDE). Should explain that HIR cleanly separates span-preservation from semantic structure. Should also give the honest 'when NOT to use HIR' answer for simple languages.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the core benefit: desugaring in the HIR layer means analysis passes (type checker, borrow checker) see a smaller, uniform set of constructs — for-loop, while-let, if-let, and '?' all desugar to combinations of loop, match, and return",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains stable node IDs (HirId): every HIR node gets a unique ID that allows cross-pass references — the type table, diagnostic engine, and borrow checker can all refer to the same node by ID",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the separation of concerns: the AST is the source of truth for source positions and faithful syntax representation; the HIR is the source of truth for semantic structure — mixing them in one data structure creates tension",
+          "type": "qualitative"
+        },
+        {
+          "text": "Gives the honest 'when NOT to introduce a HIR' answer: for simple languages with few sugar forms, a well-designed AST may be sufficient — the HIR complexity is only justified when analysis passes are significantly simpler against the desugared form",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm implementing the AST-to-HIR lowering pass and I have a problem with spans. When I desugar 'for x in iter { body }' into 'loop { match Iterator::next(...) { Some(x) => { body }, None => break } }', the synthetic loop and match nodes I create have no natural source position. If my type checker later reports an error on one of these synthetic nodes, the diagnostic will point at nothing. How should I handle spans for synthetic nodes created during desugaring?",
+      "expected_output": "Should explain the strategy: assign the parent construct's span to synthetic nodes (the desugared loop gets the span of the 'for' keyword/expression), mark synthetic spans so the diagnostic engine knows they're not user-written, preserve the original AST node's span as the outermost span of the desugared construct, and explain that every HIR node must have a valid non-dummy span (dummy spans cause poor diagnostics). Should mention SyntaxContext for distinguishing synthetic from user-written spans.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Gives the concrete rule: assign the parent/enclosing construct's span to synthetic nodes — e.g., the synthetic loop generated from a for-loop desugaring gets the span of the 'for' keyword or the entire for-expression",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains that synthetic spans should be marked/distinguished from user-written spans so the diagnostic engine can tell whether to say 'at this location' vs 'in this desugared construct'",
+          "type": "qualitative"
+        },
+        {
+          "text": "States the invariant: every HIR node must have a valid, non-dummy span — dummy spans cause the diagnostic engine to produce unhelpful or broken error output",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains that the original AST node's span should be preserved as the outermost span of the desugared construct, so that errors within the desugaring can still point back to the original user-written code",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

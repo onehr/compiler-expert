@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-testing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My compiler now handles about 40% of valid C programs. I want to set up differential testing against gcc to catch miscompilations. How do I structure this? What programs can I use as test cases, how do I compare results, and how do I avoid false positives from undefined behavior in the test programs?",
+      "expected_output": "Should explain the exit-code oracle approach: write C programs that return 0 for correct and non-zero for incorrect, then compare the exit codes of your compiler's output vs gcc's output. Should explain the UB filter trick: run each test case under gcc -O0, gcc -O1, and gcc -O2; if they disagree with each other, the program has UB and should be filtered out as an invalid oracle. Should explain test case requirements: defined behavior only, small (under 20 lines), one feature per file, returns a value that encodes the expected result. Should cover the directory structure for differential test cases. Should explain when to run differential tests (not on every commit — only on pushes to main due to cost). Should cover the Python harness pattern for automation.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the exit-code oracle: test programs should return 0 when the computation is correct and non-zero otherwise; comparing exit codes between your compiler and gcc is a zero-infrastructure correctness oracle",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the UB filter trick: run each candidate test case through gcc at -O0, -O1, and -O2; if the exit codes differ across optimization levels, the program invokes undefined behavior and is not a valid oracle — filter it out automatically",
+          "type": "qualitative"
+        },
+        {
+          "text": "States concrete test case requirements: defined behavior only, small size (e.g., under 20 lines), one feature per file, return value encodes expected result",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains when differential testing should run in CI: it is too slow for every commit; should run on push to main or on a schedule, not on every PR — distinguishing it from fast per-PR tests",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm setting up a CI pipeline for my compiler project written in Rust. What tests should run on every commit vs. every PR vs. only on main branch pushes? And what are the essential quality gates I should enforce before allowing a merge?",
+      "expected_output": "Should provide a tiered test strategy with timing budgets: unit tests (< 30s, every commit), integration/corpus tests (< 2 min, every PR), snapshot tests (< 1 min, every PR), fuzz smoke test (< 5 min, every PR), differential testing (< 10 min, push to main only). Should list the essential gate commands: cargo fmt --check, cargo clippy with -D warnings and -D clippy::unwrap_used, cargo test --workspace, INSTA_UPDATE=no cargo insta test --unreferenced=reject, and a short fuzz run. Should explain WHY clippy::unwrap_used matters for compiler code: a panic in parsing/analysis code crashes on user input. Should mention that INSTA_UPDATE=no in CI prevents auto-blessing wrong output.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Provides a tiered pipeline with explicit timing budgets: unit tests on every commit (< 30s), corpus/integration tests on every PR (< 2 min), and differential testing reserved for main branch pushes only",
+          "type": "qualitative"
+        },
+        {
+          "text": "Lists cargo clippy with -D clippy::unwrap_used as a required gate and explains why: .unwrap() in compiler code (parsing, analysis paths) is a potential panic on user input, which is unacceptable",
+          "type": "qualitative"
+        },
+        {
+          "text": "Includes snapshot testing in the CI pipeline with INSTA_UPDATE=no and --unreferenced=reject, and explains that this prevents auto-blessing wrong output and catches stale snapshots",
+          "type": "qualitative"
+        },
+        {
+          "text": "Includes a fuzz smoke test (short duration, e.g., 30 seconds) as a per-PR gate, explaining that this catches obvious panics in common code paths before they reach main",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

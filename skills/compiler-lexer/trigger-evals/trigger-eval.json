@@ -1,0 +1,82 @@
+[
+  {
+    "query": "I'm implementing a lexer for my language in Rust and I can't figure out the best way to handle string literals with escape sequences. The tricky part is interpolated strings like `\"hello {name}\"` — do I emit multiple tokens or one big string token?",
+    "should_trigger": true
+  },
+  {
+    "query": "should I hand-write my scanner or use a lexer generator? my language has context-sensitive tokens — `<` is both a comparison operator and the start of a generic type parameter. regex-based generators seem like they can't handle this",
+    "should_trigger": true
+  },
+  {
+    "query": "my tokenizer is way too slow on large files — profiling shows it's spending 80% of time in UTF-8 decoding. the files are mostly ASCII though. is there a fast path I can take for ASCII-only input while still handling unicode identifiers?",
+    "should_trigger": true
+  },
+  {
+    "query": "how do production compilers handle keywords vs identifiers? I'm using a hashmap lookup after scanning each identifier but I've heard some compilers use perfect hash functions or even just hardcode a trie. what's the fastest approach?",
+    "should_trigger": true
+  },
+  {
+    "query": "implementing a C11 lexer and hitting edge cases with the preprocessor number token. According to the spec, pp-number includes things like `0x1.fp+3` and `.1e-2` which is pretty wild. How do I tokenize these correctly without making the lexer know about number formats?",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to track source locations for error messages. Right now each token stores (line, column) but I've heard Rust's compiler uses byte offsets into a global string interner. What's the standard approach for span representation in a scanner?",
+    "should_trigger": true
+  },
+  {
+    "query": "my lexer breaks when it hits Windows-style line endings (\\r\\n). Some test files use \\n and some use \\r\\n and the line numbers come out wrong. what's the cleanest way to normalize line endings in the scanner?",
+    "should_trigger": true
+  },
+  {
+    "query": "trying to decide on my token representation. Right now Token is an enum with variants like Token::Plus, Token::Ident(String), Token::IntLit(i64). But cloning tokens allocates because of the String. Should I intern identifiers? Use &str with a lifetime?",
+    "should_trigger": true
+  },
+  {
+    "query": "how do I handle lexer error recovery? right now when my scanner hits an unexpected character it just panics. I want it to skip the bad character, emit an error token, and keep going so the parser can report multiple errors in one pass",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to implement maximal munch for my scanner — when the input is `>=` it should produce a single GreaterEqual token, not Greater followed by Equal. what's the standard algorithm? My current approach with peek() feels hacky",
+    "should_trigger": true
+  },
+  {
+    "query": "my Pratt parser gives the wrong associativity for the power operator. `2 ** 3 ** 4` should be `2 ** (3 ** 4)` but it's parsing as `(2 ** 3) ** 4`. I think I need to use a lower right binding power?",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm using logos (the Rust lexer generator crate) and I need to add a custom callback for parsing nested block comments. The docs mention `#[regex]` with a callback but the examples are confusing",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I tokenize user input for a search bar? I need to split on spaces but respect quoted strings like `\"hello world\"` as a single token. Using Python's shlex module seems overkill",
+    "should_trigger": false
+  },
+  {
+    "query": "writing a JSON parser from scratch in Rust as a learning exercise. I have the basic structure working but I'm stuck on parsing unicode escape sequences like \\u0041 in strings",
+    "should_trigger": false
+  },
+  {
+    "query": "my regex engine's NFA-to-DFA conversion is producing too many states — the DFA has 50k states for a fairly simple pattern. Is there a way to minimize the DFA or should I use a lazy/hybrid approach?",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to implement syntax highlighting for my custom language in VS Code. The TextMate grammar format uses regex for tokenization — is that the right approach or should I use a semantic tokens provider?",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I implement name resolution for my language? After parsing I have an AST but identifiers aren't resolved to their declarations yet. I need to handle nested scopes, function parameters, and module imports",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm building a log parser that needs to extract timestamps, severity levels, and message bodies from unstructured log files. The format varies between services. Should I use regex or write a custom tokenizer?",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the difference between a scanner and a parser? I'm confused about where tokenization ends and parsing begins. My professor mentioned 'scannerless parsing' — when would you want that?",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to split a SQL query into tokens for a query builder library. Not writing a compiler, just need to identify SELECT/FROM/WHERE keywords and column names so I can rewrite the query programmatically",
+    "should_trigger": false
+  }
+]

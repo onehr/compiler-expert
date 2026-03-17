@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-diagnostics",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want my compiler to produce error messages like Rust or Clang — with the source line printed, a caret pointing at the problem, and maybe underlines for the full span. Right now I just print 'error at line 42'. How do I implement caret-style diagnostics? What data structures do I need to track, and how do I render the source snippet with the caret?",
+      "expected_output": "Should explain the span data structure (half-open byte range [start, end) plus file ID), how to store byte offsets and lazily compute line/column from a line-offset table (SourceMap), how to render: retrieve the source line, print it, then print a caret '^' under the primary token and '~' for the range extent. Should explain primary vs secondary spans, severity levels, and mention that all this requires attaching spans to every token and AST node in the first place.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the span data structure: a half-open byte range [start, end) plus a file identifier, with line/column computed lazily from a line-offset table (SourceMap) rather than stored in the span itself",
+          "type": "qualitative"
+        },
+        {
+          "text": "Describes the caret rendering algorithm: retrieve the source line containing the span, print it, then print a line of spaces with '^' under the primary point and '~' for the extent of the range",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains primary vs secondary spans: one primary span (the error site, label should be self-contained) plus optional secondary spans that provide context with their own labels",
+          "type": "qualitative"
+        },
+        {
+          "text": "States the prerequisite: spans must be attached to every token during lexing and every AST node during parsing — without this, there is nothing to point at",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My compiler is producing a cascade of 50+ errors when there's actually only one real mistake — a type mismatch causes every downstream expression to be flagged as an error too. Also, my parser recovers from syntax errors but I'm getting duplicate error messages about the same location. How do I suppress cascading errors and avoid duplicate reporting?",
+      "expected_output": "Should explain error-type sentinels (propagate a special 'error type' / TyKind::Error through the type system so that any operation involving an error type is silently accepted — this breaks the cascade), explain the ContainsErrors / error sentinel bit pattern, mention setting a configurable error limit (rustc default 50), explain deduplication (track reported spans and skip re-reporting the same location), and mention separating recovery from reporting (the parser recovers structurally, the diagnostics system handles reporting).",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains error-type sentinels: introduce a special 'error' type (e.g., TyKind::Error in rustc) that is compatible with any operation — when a subexpression's type is already 'error', downstream type checks involving it are silently suppressed",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains that the goal is to break error cascades: once an error sentinel propagates through the type system, no secondary errors for expressions that 'contain errors' should be emitted",
+          "type": "qualitative"
+        },
+        {
+          "text": "Recommends an error count limit (configurable; rustc defaults to 50 errors) as a safety valve to prevent error floods from overwhelming the user",
+          "type": "qualitative"
+        },
+        {
+          "text": "Separates parser error recovery (structural — produce a valid-enough AST to continue) from diagnostic reporting (the reporting system emits the error message) — they are distinct concerns and conflating them causes duplicate messages",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

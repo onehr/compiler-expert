@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-abi",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm generating x86-64 assembly (targeting Linux) for a function call: 'int result = add(1, 2.0, 3, 4, 5, 6, 7)' where 'add' takes an int, a double, and five more ints. I need to know exactly which registers hold which arguments, what goes on the stack, and which registers I need to save before the call. Also, my compiler is generating leaf functions — can I use the red zone?",
+      "expected_output": "Should apply the System V AMD64 ABI: rdi=1 (first int), xmm0=2.0 (first FP, counted independently), rsi=3, rdx=4, rcx=5, r8=6, r9=7 — wait, only 6 int regs available so arg 7 (the 7th int) goes on the stack. Should explain integer and FP register slots are counted independently. Should list caller-saved vs callee-saved registers. Should explain the red zone (128 bytes below rsp, safe for leaf functions on Linux but NOT in kernel code).",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Correctly applies the System V AMD64 integer register sequence (rdi, rsi, rdx, rcx, r8, r9) and XMM register sequence (xmm0-xmm7), explaining that integer and FP argument slots are counted independently",
+          "type": "qualitative"
+        },
+        {
+          "text": "Correctly identifies which argument overflows to the stack: only 6 integer registers are available, so the 7th integer argument goes on the stack (right to left)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Correctly lists caller-saved registers (rax, rcx, rdx, rsi, rdi, r8-r11, xmm0-xmm15 — may be clobbered) vs callee-saved registers (rbx, rbp, r12-r15 — callee must preserve)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Correctly explains the red zone: the 128 bytes below rsp are not clobbered by signal handlers on Linux, so leaf functions can use this space without adjusting rsp — but warns it must NOT be used in kernel code",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm writing a new compiled language that needs to call C libraries on Linux. My language has structs, and I need to understand exactly when a struct is passed by value in registers vs. when it's passed via a hidden pointer. Can you explain the System V AMD64 struct classification algorithm, give me a few concrete examples, and tell me what the 'hidden pointer' pattern looks like at the call site?",
+      "expected_output": "Should explain the eightbyte classification algorithm (each 8-byte chunk classified as INTEGER, SSE, or MEMORY independently; if struct fits in 2 registers and both eightbytes are INTEGER or SSE, pass in registers; otherwise pass by hidden pointer), give the 16-byte rule (struct > 16 bytes always passed in memory), show concrete examples (e.g., {int, int} fits in rdi, a {int, double, double} doesn't), and explain the hidden pointer convention (caller allocates space, passes pointer as first argument, shifts other args).",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the eightbyte classification algorithm: each 8-byte chunk of the struct is classified independently as INTEGER (integer/pointer fields), SSE (FP fields), or MEMORY (oversized, non-trivial, or mixed)",
+          "type": "qualitative"
+        },
+        {
+          "text": "States the key rule: a struct larger than 16 bytes is always passed in memory (via hidden pointer), regardless of field types",
+          "type": "qualitative"
+        },
+        {
+          "text": "Gives at least one concrete example: e.g., a struct with two int fields (8 bytes total) fits in a single integer register, while a struct with three fields totaling more than 16 bytes uses the hidden pointer convention",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the hidden pointer convention: the caller allocates space for the struct in memory, passes a pointer to that space as an implicit first argument, and the callee writes the struct there — shifting the other arguments down by one register slot",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

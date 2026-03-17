@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-name-resolution",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm implementing a tree-walk interpreter and my closures have a scoping bug. If I write: 'var a = 1; fun f() { print a; } var a = 2; f();' — my interpreter prints 2 instead of 1, because the closure captured a live reference to the environment map and sees the later reassignment. How do I fix this? I've heard there's a 'resolver pass' approach. What does that look like and why is it better than fixing it at runtime?",
+      "expected_output": "Should diagnose the mutable environment bug (closure captures a live reference to the hashmap, not a snapshot), explain the resolver pass approach (separate O(n) AST walk that pre-computes scope depth — 'environment hop distance' — for every variable reference, stores in a side table keyed by AST node identity), explain why this is better than runtime walking (resolves once at compile time rather than re-walking on every execution), and explain the two-tier system (locals use static depth encoding, globals looked up dynamically for REPL support).",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Correctly diagnoses the mutable environment bug: the closure holds a live reference to the same hashmap that receives later variable declarations, so later-declared variables in the same block become visible to the closure — violating lexical scoping",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the resolver pass: a dedicated O(n) AST walk between parsing and execution that pre-computes the 'scope depth' (environment hop count) for every variable reference and stores it in a side table keyed by AST node identity",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains why the resolver pass is better than a runtime fix: it resolves each variable reference exactly once (rather than re-walking the environment chain on every execution), and at runtime the interpreter calls getAt(depth, name) with the pre-computed depth",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the two-tier lookup: locals use static depth encoding (resolver computes the hop count), but global variables are deliberately excluded from the resolver and looked up dynamically by name — to support REPL-style incremental definition",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm building a module system for my language. Functions can call other functions defined later in the same module (forward references), and two functions can be mutually recursive. But my single-pass name resolver fails on 'fun a() { b(); } fun b() { a(); }' because 'b' isn't in scope when 'a' is processed. How do I handle forward references and mutual recursion in the resolver without requiring the programmer to write forward declarations?",
+      "expected_output": "Should explain the two-pass strategy (first pass scans all top-level declarations and populates the symbol table with names only; second pass resolves all function bodies with full visibility of all names), explain the function eagerness distinction (function names declared AND defined before body resolution, enabling self-recursion), contrast with variable initializer handling (declare name, resolve initializer, then define — to detect use-before-init), and mention the alternative of building an abstract IR with symbolic references resolved in a later pass.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Recommends the two-pass strategy: a first pass that scans all function declarations and adds their names to the symbol table, followed by a second pass that resolves function bodies with full visibility of all declared names",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains function eagerness: function names are declared AND defined (made available for lookup) before their bodies are resolved — this enables self-recursion and mutual recursion without forward declarations",
+          "type": "qualitative"
+        },
+        {
+          "text": "Contrasts function eagerness with variable initialization: for variables, the name is declared but not yet defined when the initializer is resolved — this allows the resolver to detect use-before-init errors like 'var x = x + 1'",
+          "type": "qualitative"
+        },
+        {
+          "text": "The response explains this as a scoping/resolution design decision rather than a user burden — the compiler handles forward references transparently through two-pass resolution, so programmers do not need to write forward declarations",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

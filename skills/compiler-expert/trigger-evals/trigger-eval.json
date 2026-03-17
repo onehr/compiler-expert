@@ -1,0 +1,82 @@
+[
+  {
+    "query": "I'm trying to build a small language that compiles to WASM — it's basically a typed scripting language with closures and pattern matching. where do I even start? I have some experience with Rust but never touched compiler stuff",
+    "should_trigger": true
+  },
+  {
+    "query": "my compiler is segfaulting when it tries to compile nested struct initializers. I think the issue is somewhere in the lowering pass but I'm not sure how to debug this — the IR dump looks fine up until the codegen phase",
+    "should_trigger": true
+  },
+  {
+    "query": "what's the best approach for adding incremental compilation to an existing single-pass compiler? currently it takes ~8 seconds to recompile 50k lines and my users are complaining",
+    "should_trigger": true
+  },
+  {
+    "query": "im working on a toy interpreter in rust, its a treewalk interpreter right now but i want to add a bytecode vm. should i use a stack machine or register machine? the language has first-class functions and closures",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to implement a C preprocessor that handles #include, #define with arguments, #ifdef/#ifndef, and token pasting. We're building a C11 compiler and this is the next milestone. Any guidance on the standard-compliant way to do macro expansion?",
+    "should_trigger": true
+  },
+  {
+    "query": "how do languages like Lean 4 and Agda handle universe polymorphism? I'm designing a proof assistant and need to understand the elaboration pipeline — specifically how implicit arguments get resolved during type checking",
+    "should_trigger": true
+  },
+  {
+    "query": "we have a DSL for our data pipeline configs (think like a simplified SQL + Python hybrid) and right now it's just interpreted. boss wants us to JIT compile hot paths. never done this before, is LLVM or Cranelift better for this use case?",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm getting weird ABI issues — my compiler generates code that works fine standalone but crashes when calling into C libraries. The stack alignment looks off on x86-64 linux. System V ABI requires 16-byte alignment before call right?",
+    "should_trigger": true
+  },
+  {
+    "query": "trying to figure out the right testing strategy for my compiler. I have unit tests for the lexer and parser but nothing for the type checker or codegen. what do production compilers like rustc or gcc do? FileCheck? snapshot tests?",
+    "should_trigger": true
+  },
+  {
+    "query": "is it possible to implement borrow checking without a full MIR? I have an AST-based compiler and adding a whole new IR layer feels like overkill for my small language, but I want some form of ownership tracking",
+    "should_trigger": true
+  },
+  {
+    "query": "how do I set up a REST API with axum in Rust? I need endpoints for user authentication and a PostgreSQL database connection pool",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm trying to parse a JSON configuration file in Python. The file has nested objects and I need to validate the schema. Should I use pydantic or jsonschema?",
+    "should_trigger": false
+  },
+  {
+    "query": "my React app is slow — the component tree re-renders on every keystroke in the search box. I think I need useMemo or React.memo but I'm not sure which",
+    "should_trigger": false
+  },
+  {
+    "query": "can you help me write a GitHub Actions workflow that runs cargo test on every PR and deploys to fly.io on merge to main?",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to compile my TypeScript project to JavaScript. tsc is throwing errors about module resolution — I'm using ES modules but some dependencies are CommonJS",
+    "should_trigger": false
+  },
+  {
+    "query": "how do I compile and install nginx from source on Ubuntu 22.04? I need to add the headers-more module which isn't in the default package",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm building a code formatter for our internal DSL — it needs to handle indentation, line wrapping at 100 chars, and preserve comments. Basically like prettier but for our config language",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the difference between an Abstract Syntax Tree and a parse tree? I'm studying for my programming languages midterm and the textbook explanation is confusing me",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to transpile our legacy Perl scripts to Python 3. There are about 200 scripts and some of them use pretty obscure regex features. Is there a tool for this or do I need to do it manually?",
+    "should_trigger": false
+  },
+  {
+    "query": "my GCC is giving me 'undefined reference to symbol' errors when linking. I think the issue is the order of -l flags. Does the linker really care about library order?",
+    "should_trigger": false
+  }
+]

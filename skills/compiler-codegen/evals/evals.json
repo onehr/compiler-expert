@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-codegen",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm building a bytecode VM for a dynamically-typed scripting language (similar to Lua or Lox). I need to decide between a stack-based VM and a register-based VM, and separately how to represent values at runtime — whether to use a tagged union struct or NaN boxing. My primary concern is keeping the implementation simple first but not painting myself into a corner. What are the concrete tradeoffs and what should I start with?",
+      "expected_output": "Should recommend stack VM first (simpler, no register allocation needed, postorder traversal drives emission naturally), explain the ~47% fewer instructions for register VMs with the ~12% performance gain tradeoff, explain NaN boxing (IEEE 754 quiet NaN has 51 spare mantissa bits, 48-bit pointers fit, type tags in remaining bits, halves Value size vs tagged union's 16 bytes), and give guidance on when to move to a register VM or NaN boxing.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Recommends starting with a stack VM, explaining that no register allocation is needed and that postorder AST traversal drives bytecode emission trivially",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the register VM tradeoff: roughly 47% fewer instructions and ~12% faster execution, but requires a register allocator in the front-end compiler",
+          "type": "qualitative"
+        },
+        {
+          "text": "Correctly explains NaN boxing: IEEE 754 quiet NaN has spare mantissa bits; on 64-bit platforms pointers fit in 48 bits; type tags occupy the remaining bits; result is an 8-byte Value instead of a 16-byte tagged union",
+          "type": "qualitative"
+        },
+        {
+          "text": "Gives practical guidance on when to switch: NaN boxing is justified when memory bandwidth is a concern (large arrays, many closures); register VM when the ~12% speed gain matters and complexity is acceptable",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm implementing a native x86-64 code generator for a statically-typed language and I need to choose a register allocation strategy. My IR is already in SSA form. I want good code quality but I also need this to compile reasonably fast. Should I use graph-coloring allocation (Chaitin-Briggs), linear scan, or something SSA-specific? And what is the general pipeline from SSA IR to emitted assembly?",
+      "expected_output": "Should recommend SSA-based allocation (chordal interference graph enables polynomial-time optimal coloring) given that SSA is already available and quality matters, explain graph coloring convergence (build interference graph → coalesce → spill estimation → Simplify/Select → insert spills → iterate), explain linear scan as the faster alternative (O(n log n), good for JIT), describe the full pipeline (instruction selection → register allocation → spill code insertion → re-allocation → emission), and mention out-of-SSA translation is needed before or during allocation.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Recommends SSA-based allocation when SSA is available and code quality is the priority, explaining that the chordal interference graph enables polynomial-time optimal coloring",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains linear scan as the speed-focused alternative: O(n log n), suitable for JIT compilation, but overestimates live ranges by ignoring control flow",
+          "type": "qualitative"
+        },
+        {
+          "text": "Describes the graph-coloring convergence loop: build interference graph, coalesce copies, estimate spill costs, Simplify/Select phases, insert spill code, re-run (typically 1-3 iterations)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Describes the native code emission pipeline in order: instruction selection, register allocation, spill code insertion, and final code emission — and notes that out-of-SSA translation (inserting copies) is required",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-comptime",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm designing a new systems language and deciding where to draw the compile-time/runtime boundary. I want the language to support generics, compile-time constants, and conditional compilation. Should I use an explicit annotation system like Zig's `comptime`, implicit constant propagation like C/LLVM, or something else? What are the tradeoffs?",
+      "expected_output": "Should explain the three main boundary design options: explicit annotation (Zig comptime — programmer marks expressions; clear, predictable, no surprise), implicit constant propagation (C/LLVM — compiler infers what to evaluate; simpler to use, harder to reason about), and staged programming (MetaML — explicit quotation brackets; formal but verbose). Should explain the decision criteria for what must run at compile time: when is a value needed to determine a type or size? When is it needed to generate code? Should explain the key advantage of explicit comptime: the programmer can depend on the result being computed at compile time (for performance, for generics). Should explain monomorphization as the implementation strategy for generics when using comptime. Should give guidance on which approach fits the stated use cases (generics, constants, conditional compilation).",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the explicit annotation approach (Zig-style comptime): programmer annotates what must run at compile time; the compiler guarantees evaluation and errors if the expression is not comptime-known; this gives predictable, auditable behavior",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the implicit constant propagation approach (C/LLVM-style): the compiler opportunistically evaluates constant expressions without programmer annotation; simpler for users but the programmer cannot rely on or guarantee compile-time evaluation",
+          "type": "qualitative"
+        },
+        {
+          "text": "States the decision criteria for what must run at compile time vs. runtime: values needed to determine type size or layout must be compile-time; values needed for code specialization (generics, loop unrolling) should be compile-time; values with observable runtime side effects must be runtime",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains how comptime enables generic programming via monomorphization: the compiler generates a separate specialized copy of a function for each distinct comptime argument, giving zero-overhead generics",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What is the difference between constant folding, constant propagation, and a full comptime evaluation system like Zig's? My compiler already does constant folding — when should I invest in full comptime instead? What does comptime enable that constant folding cannot?",
+      "expected_output": "Should define constant folding precisely: fold a single expression with constant operands (3 * 4 → 12). Should define constant propagation: track which variables hold known-constant values through the dataflow, enabling more folding downstream. Should explain that both are optimization passes — they run on the IR and are opportunistic. Should contrast with comptime: comptime is mandatory and user-visible. It enables: (1) types as first-class values and generic functions that return types, (2) compile-time reflection (inspect struct fields, type info), (3) compile-time assertions and error generation, (4) loop unrolling over comptime-known sequences (inline for). Should explain when to invest: if generics require monomorphization, if users need to write code that generates types, if you want to eliminate a macro system. Should explain the implementation requirement: comptime needs a compile-time interpreter over the typed IR.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Correctly defines constant folding (fold a single expression with constant operands) vs. constant propagation (track constant values through dataflow to enable more folding), and explains that both are IR optimization passes that are opportunistic and invisible to the programmer",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the key distinction of full comptime: it is mandatory and user-visible — the programmer can depend on evaluation happening at compile time, and can write code whose purpose is to run at compile time to produce types, values, or code",
+          "type": "qualitative"
+        },
+        {
+          "text": "Identifies at least two things comptime enables that constant folding cannot: types as first-class comptime values (generics via functions returning types), compile-time reflection (@typeInfo / struct field introspection), or compile-time loop unrolling over static sequences (inline for)",
+          "type": "qualitative"
+        },
+        {
+          "text": "States when to invest in full comptime: when generics need monomorphization support, when users want to eliminate a macro system, or when the language wants type-level programming without a separate template/macro sublanguage",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "skill_name": "compiler-expert",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm building a lexer for a small statically-typed language in Rust. The language has keywords (fn, let, if, else, return), identifiers, integer literals, float literals, string literals, and operators (+, -, *, /, ==, !=, <=, >=, =, <, >). I need to decide: should I hand-code the lexer or use a generator? And how should I handle keywords vs identifiers? Please give me a concrete implementation plan with the key design decisions explained.",
+      "expected_output": "Should give concrete recommendation (hand-code vs generator with clear rationale), explain keyword handling strategies (separate rules vs symbol table preloading), cover token representation, and mention maximal munch behavior. Should reference tradeoffs like speed vs maintainability.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Gives a concrete, unambiguous recommendation: hand-code OR use a generator (not 'either works' without guidance)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Covers both keyword handling strategies: (1) separate RE rule per keyword, and (2) scan as identifier then do symbol table lookup",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains maximal munch behavior — e.g., how '<=' vs '<' is handled, or what happens when the DFA overshoots",
+          "type": "qualitative"
+        },
+        {
+          "text": "Addresses token representation: what data a Token struct should hold (kind/category + lexeme or offset)",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm implementing a recursive descent parser for an expression language with the following operators (in increasing precedence): assignment (=, right-assoc), logical or (||), logical and (&&), equality (==, !=), comparison (<, >, <=, >=), addition/subtraction (+, -), multiplication/division (*, /), unary negation (-), and function calls f(args). I'm running into problems with left recursion and operator associativity. How do I correctly structure the grammar and parser so that precedence and associativity are handled properly?",
+      "expected_output": "Should explain precedence stratification via nonterminal hierarchy, left recursion elimination (and the critical warning about associativity inversion), concrete grammar rules or code structure, handling unary vs binary minus. Should distinguish this from LR parsing approach.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains precedence stratification: each precedence level maps to a separate grammar rule / parsing function",
+          "type": "qualitative"
+        },
+        {
+          "text": "Warns that naive left-recursion elimination changes associativity (left-assoc operators need right-recursive grammar to eliminate left recursion, then special handling)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Correctly handles right-associativity for assignment (=): uses right-recursive grammar rule or explicit right-recurse in the parse function",
+          "type": "qualitative"
+        },
+        {
+          "text": "Distinguishes unary minus from binary minus and explains how to parse them at different precedence levels",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I'm writing an optimizing compiler for a toy language and need to choose an intermediate representation. My compiler will do: constant folding, dead code elimination, common subexpression elimination, and eventually generate x86-64 assembly. Should I use an AST, three-address code (TAC), or SSA form? When should I convert between them? I'm also confused about when to build a control flow graph vs just using the IR directly.",
+      "expected_output": "Should give clear recommendation for optimization pipeline (TAC or SSA), explain when SSA pays off vs TAC, describe CFG construction (basic blocks, leaders), explain progressive lowering strategy, clarify AST's role (frontend only) vs TAC/SSA (optimizer). Should mention the cost of SSA construction and out-of-SSA translation.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Gives a specific IR recommendation (TAC or SSA) with clear rationale — not a vague 'it depends'",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains WHY SSA simplifies optimization: each name has exactly one definition, so dataflow analysis is trivially available from the name",
+          "type": "qualitative"
+        },
+        {
+          "text": "Correctly scopes AST usage: AST is for the frontend (parsing, type checking), NOT for optimization or code generation",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains CFG construction: identify basic blocks (via leaders), then connect with edges — and states that the CFG is built FROM the linear IR",
+          "type": "qualitative"
+        },
+        {
+          "text": "Mentions progressive lowering or multi-stage IR (high-level IR → lower-level IR → machine code) rather than a single flat conversion",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

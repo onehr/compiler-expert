@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-optimizer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm adding constant folding and dead code elimination to my compiler. My IR is linear three-address code (not SSA). For constant folding, I think I can just evaluate operations with constant operands. For DCE, I'm unsure: if I fold '3 * 4' to '12' but the result is never used, how do I know it's dead? And if I delete it, does that create more dead code I need to clean up? How do I implement these two passes correctly, and in what order should I run them?",
+      "expected_output": "Should explain constant folding (evaluate at compile time when all operands are known constants, replace with the constant result), explain local DCE for linear IR (backward pass over a basic block: a definition is dead if the variable is not used in any subsequent instruction in the block and not live on exit; remove dead definitions), explain the interaction (folding creates dead temporaries that DCE then removes), explain iteration (run folding then DCE, possibly repeat), and mention that side-effecting instructions cannot be eliminated even if their result is unused.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Correctly explains constant folding: if all operands of an operation are compile-time constants, evaluate the operation at compile time and replace the instruction with a constant assignment",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains local DCE for linear IR: scan the block backward; a definition is dead if the variable it defines is not referenced by any later instruction in the block and is not live on block exit; remove dead definitions",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the interaction and why iteration is needed: constant folding eliminates uses of variables, which may cause those variables' definitions to become dead, which DCE then removes — running them together or in sequence until no progress is made handles this chain",
+          "type": "qualitative"
+        },
+        {
+          "text": "States the critical safety constraint: side-effecting instructions (stores, function calls, I/O) cannot be eliminated even if their result is unused — only pure computations are safe to remove",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I want to build a more serious optimization pipeline for my compiler. I've heard SSA form makes optimizations easier. Can you explain what SSA actually gives me over plain three-address code for implementing (1) global constant propagation, and (2) global dead code elimination? And what's the process for constructing SSA from my existing CFG-based IR?",
+      "expected_output": "Should explain what SSA gives: each name has exactly one definition, so dataflow facts are trivially local to a definition rather than requiring global analysis. For DCE: in SSA, a def is dead iff use count == 0 — simple worklist, no liveness analysis needed. For constant propagation: SCCP can propagate constants through the SSA graph optimistically (assume top/unknown initially, propagate when unified) and simultaneously prune unreachable branches. Should explain SSA construction: compute dominance tree, place phi functions at dominance frontiers, rename variables.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the core SSA invariant: each name has exactly one definition, so there is no ambiguity about which definition reaches a use — this makes dataflow facts local to a definition rather than requiring full global analysis",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains SSA-based DCE: in SSA form, a definition is dead if and only if its use count is zero; DCE becomes a simple worklist — initialize with all definitions, remove zero-use-count definitions, decrement operand use counts, repeat",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains SCCP (Sparse Conditional Constant Propagation): uses a three-point lattice (top/unknown, constant(v), bottom/non-constant), propagates optimistically along the SSA use-def graph, and simultaneously marks branches as executable or unreachable — more powerful than simple constant propagation because it prunes unreachable code",
+          "type": "qualitative"
+        },
+        {
+          "text": "Describes SSA construction: compute the dominator tree, identify dominance frontiers (where phi functions must be placed), insert phi functions at join points for each variable, then rename all variable definitions and uses with unique names",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

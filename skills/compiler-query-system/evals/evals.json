@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-query-system",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm building a compiler for a language with modules and I want to add incremental compilation so that editing one file doesn't recompile the whole program. I've read about rustc's query system. How does it work, and how does it achieve the 'red/green' incremental rebuilds? What would I need to implement to get this working?",
+      "expected_output": "Should explain the query model: compiler exposes named queries (parse_file, type_of, mir_of, etc.) that are lazy and memoized. Should explain the dependency graph: when query A calls query B, an edge A → B is recorded automatically. Should explain red/green computation: on rebuild, re-execute queries over changed inputs; if the new result equals the cached result (green), do not propagate invalidation upward — downstream queries can reuse their cached results. If the result changed (red), invalidate downstream queries. Should explain inputs: source files and flags are the only things that change; everything else is derived. Should explain content hashing for change detection (not timestamps). Should mention the implementation complexity and when a simpler approach (file-level dependency tracking) might be sufficient.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the query model: compiler functionality is exposed as named, lazy, memoized queries that compose by calling each other; the dependency graph is built automatically at runtime by recording query-calls-query edges",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the red/green algorithm: re-execute queries directly over changed inputs; if the new result equals the cached result, mark the node green and do NOT propagate invalidation upward — downstream queries remain valid even if an upstream input changed",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains why content hashing is used instead of timestamps: a file's hash is stored; on rebuild, if the hash matches, the file is treated as unchanged even if the modification time changed (e.g., after git checkout)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Gives guidance on when a full query system is warranted vs. simpler approaches: full query system for large programs or IDE integration; file-level dependency tracking or module-level separate compilation for smaller compilers or early prototype stages",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My compiler has a query-based architecture and I'm running into a problem: some queries are mutually recursive. For example, type-checking a function may need to type-check another function that refers back to the first one (e.g., mutually recursive functions or types). How does rustc's query system handle cycles, and what are my implementation options?",
+      "expected_output": "Should explain naive cycle detection: when query Q(x) begins execution, record it in an 'in progress' set; if Q(x) is demanded again while still in progress, a cycle is detected. Report a compiler error (e.g., 'recursive type has infinite size'). Should explain provisional values as the more advanced option: start with an optimistic guess, re-execute the cycle, iterate to fixpoint. Should mention Chalk and Salsa as frameworks that support provisional values for handling recursive trait/type queries. Should explain that rustc reports most cycles as errors but uses provisional values for specific cases (recursive trait resolution in Chalk). Should explain the practical implications for compiler design: most cycles in user code are errors (recursive type without indirection); handle them as errors first, add provisional-value support only if needed.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the basic cycle detection mechanism: maintain a 'currently executing' set per query type; when a query Q(x) is demanded and Q(x) is already in the set, a cycle is detected — report an error or handle specially",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains provisional values as the advanced approach: seed the cycle with an optimistic initial value, re-execute all queries in the cycle using the provisional result, and iterate until the results stabilize at a fixpoint — enabling mutually recursive types and traits",
+          "type": "qualitative"
+        },
+        {
+          "text": "Correctly notes that most cycles in user code are programmer errors (e.g., a recursive type without indirection) and should be reported as compilation errors; provisional values are needed only for intentionally recursive queries like trait resolution or recursive types with known base cases",
+          "type": "qualitative"
+        },
+        {
+          "text": "Mentions Salsa (or Chalk) as a query system framework that handles cycle detection and provisional values, describing it as an abstraction of rustc's query system into a reusable library",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

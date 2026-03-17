@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-linker",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm writing a compiler that targets x86-64 Linux and I need to generate ELF object files that the system linker (ld/lld) can process. What sections do I need to emit, what goes in the symbol table, and how do I generate relocation records? Specifically, I have function calls to external functions and references to global variables from my generated code.",
+      "expected_output": "Should explain the minimal required sections: .text (machine code), .data (initialized globals), .rodata (constants), .bss (zero-initialized globals). Should explain symbol table entries: fields needed (name, section, offset, size, binding, type), and the difference between STB_LOCAL (static), STB_GLOBAL (exported/imported), and undefined symbols for external references. Should explain relocation records: for a call to an external function, emit a PC-relative relocation (R_X86_64_PLT32 or R_X86_64_PC32); for a reference to an external data symbol in PIC code, emit a GOT-relative relocation. Should cover .bss optimization (no file bytes needed, just size). Should mention COMDAT sections for any template instantiations if applicable.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Correctly identifies the required sections: .text for code, .data for initialized globals, .rodata for read-only constants, and .bss for zero-initialized globals (noting that .bss requires no file bytes — only its size is recorded)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains symbol table entries including binding types: STB_LOCAL for module-private symbols, STB_GLOBAL for exported symbols and for undefined symbols that reference external functions/data",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains relocation records: for a call instruction to an external function, emit a PC-relative relocation; describes the relocation format (section, offset, type, symbol reference, addend)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the difference between PC-relative relocations (suitable for calls/jumps, work in PIC) and absolute relocations (bake in an address, incompatible with position-independent code)",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm building a library that will be distributed as both a static library and a shared library (.so). A user is asking me to explain the practical tradeoffs — when should they link statically vs dynamically? Also, someone mentioned I should use symbol visibility annotations on my .so — why does that matter?",
+      "expected_output": "Should cover static linking tradeoffs: larger binary, no runtime dependency, no ABI compatibility issues, faster startup. Should cover dynamic linking tradeoffs: smaller binary, shared memory between processes, runtime dependency (missing .so causes failure), ABI stability requirements. Should explain symbol visibility: STV_DEFAULT exports a symbol from the .so (visible to the dynamic linker and to LD_PRELOAD interposition); STV_HIDDEN makes it internal only. Should explain benefits of marking internal symbols hidden: smaller .so dynamic symbol table, faster dynamic linking, prevents accidental ABI surface, prevents interposition. Should mention GOT/PLT and how hidden symbols can use direct calls instead of PLT indirection.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains static linking tradeoffs: self-contained binary (no runtime .so dependency), larger binary size, no ABI compatibility concern, but no shared memory savings across processes",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains dynamic linking tradeoffs: smaller per-binary size, shared library code in memory, but requires .so to be present at runtime, requires ABI stability across versions, and startup has PLT/GOT resolution overhead",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains ELF symbol visibility: STV_HIDDEN hides a symbol from the dynamic symbol table so it cannot be accessed from outside the .so or interposed by LD_PRELOAD; STV_DEFAULT exports it publicly",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains at least one concrete benefit of using STV_HIDDEN for internal symbols: reduces dynamic symbol table size (faster dynamic linking), prevents accidental ABI exposure, or allows the linker to use direct calls instead of PLT stubs",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

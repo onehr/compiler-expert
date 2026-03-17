@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-runtime",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm designing the runtime for a new scripting language. I need to choose a garbage collection strategy. My language will have mutable objects, closures, and potentially cyclic data structures (e.g., doubly-linked lists). Low-latency pauses are not critical — I'd rather optimize for simplicity and correctness first. What GC strategy should I use, and what are the key tradeoffs between mark-and-sweep, reference counting, and generational GC for my use case?",
+      "expected_output": "Should recommend mark-and-sweep as the right starting point given the simplicity requirement and lack of latency constraint. Should explain the tri-color marking algorithm (white/gray/black states, worklist-based traversal). Should clearly explain why reference counting alone is insufficient when cycles are possible. Should mention the cycle detection problem with RC (cycles are never freed). Should explain when generational GC becomes appropriate (throughput optimization for long-lived programs). Should cover write barriers (needed for incremental/concurrent GC, not needed for stop-the-world). Should mention the heap growth heuristic for self-tuning GC.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Gives a concrete recommendation (mark-and-sweep or equivalent) appropriate for a simple scripting language without hard latency requirements, with clear rationale",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the tri-color marking algorithm: white (not visited), gray (discovered but children not traced), black (fully traced), and the worklist-based mark phase followed by a sweep phase",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the fundamental weakness of reference counting for this use case: cycles (e.g., A → B → A) are never freed because both reference counts stay above zero, requiring a separate cycle detector to handle",
+          "type": "qualitative"
+        },
+        {
+          "text": "Discusses write barriers in the context of when they are and are not needed — stop-the-world GC does not require them; concurrent or incremental GC does, to maintain the tri-color invariant",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm implementing coroutines (similar to Go goroutines or Python generators) in my language's runtime. I need to decide between stackful coroutines (each coroutine gets its own full call stack) and stackless coroutines (state machine transformation). What are the tradeoffs, and what implementation challenges should I expect for each approach?",
+      "expected_output": "Should explain the core difference: stackful coroutines maintain a full call stack per coroutine (can suspend from deep in the call stack); stackless coroutines are compiled into state machines (can only suspend at explicitly marked points). Should cover memory tradeoffs: stackful requires allocating a full stack per goroutine (Go uses 2KB + grows); stackless needs only the per-await state. Should explain the 'color problem' (async functions infect their callers). Should discuss segmented/copying stacks for stackful. Should cover suspend point analysis for stackless (what state needs to survive across suspension). Should mention that stackless is easier to implement but limits where you can suspend.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the key structural difference: stackful coroutines have a complete call stack per coroutine and can yield from anywhere in the call chain; stackless coroutines are transformed into state machines and can only suspend at explicitly marked yield/await points",
+          "type": "qualitative"
+        },
+        {
+          "text": "Addresses memory implications: stackful coroutines require allocating a stack per goroutine (with growth strategies like segmented stacks or copying/growing stacks); stackless only allocates state for values live across suspension points",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the 'function color' problem for stackless coroutines: async/generator functions are a different type and calling them from non-async code requires explicit adaptation, causing the async annotation to propagate up the call chain",
+          "type": "qualitative"
+        },
+        {
+          "text": "Describes the suspend point analysis needed for stackless coroutines: the compiler must determine which local variables are live across each await/yield point and include them in the state machine struct",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "skill_name": "compiler-elaboration",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm implementing a dependently typed language and I want to understand the elaboration process. What is the difference between the surface language and the core calculus, and what does the elaborator actually do? I'm particularly confused about how implicit arguments work — the user writes `id x` but the elaborator produces `id Nat x`. How does it figure out the omitted type argument?",
+      "expected_output": "Should explain the surface/core distinction: surface terms contain implicit arguments, syntactic sugar, underscores/holes, type ascriptions; core terms are fully explicit with every argument present, enabling a simple mechanical type checker. Should explain that elaboration is type-directed translation (bidirectional): expected types flow inward (checking mode), inferred types flow outward (inference mode). Should explain the implicit argument inference mechanism: at each application site, insert a metavariable ?M for each omitted implicit argument; unify the expected type with the actual type of the application to constrain ?M; solving unification problems fills in the metavariables. Should explain pattern unification (Miller's fragment) as the decidable core: flex-rigid equation ?M x1...xn = t has unique solution ?M := λ x1...xn. t. Should explain what happens when unification cannot immediately solve a constraint: the constraint is postponed and retried after more of the term is elaborated.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the surface/core distinction: surface terms have implicit arguments, holes, and syntactic sugar; core terms are fully explicit and type-annotated; the core type checker is a simple recursive descent algorithm with no heuristics",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains bidirectional type checking: the elaborator works in two modes — inference mode (synthesize a type bottom-up) and checking mode (verify against an expected type top-down); expected types flow inward and guide how ambiguities like implicit arguments are resolved",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains implicit argument inference via metavariables: at each application site where an implicit argument is omitted, the elaborator inserts a fresh metavariable; unification with the expected type constrains the metavariable and fills it in with the concrete value",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains pattern unification (Miller's algorithm) as the decidable fragment used in practice: a flex-rigid equation ?M applied to distinct bound variables equal to a target term t has a unique solution — the lambda-abstraction over those variables of t",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm building a proof assistant and I've hit the universe inconsistency problem. If I have `Type : Type`, my system is logically inconsistent (Girard's paradox). I need to implement universe levels. How do universe hierarchies work, and how does the elaborator handle universe polymorphism so I don't have to annotate every definition with explicit universe levels?",
+      "expected_output": "Should explain Russell's paradox / Girard's paradox: Type : Type makes the system inconsistent (self-referential types allow encoding paradoxes). Should explain the universe hierarchy: Type 0 : Type 1 : Type 2 ..., with each universe containing the previous one as a member but not itself. Should explain the typing rules for Pi and Sigma types: Pi (x : A) B : Sort (imax u v) where A : Sort u and B : Sort v. Should explain Prop's impredicativity: Pi (x : A) P : Prop whenever P : Prop, regardless of what universe A lives in. Should explain universe polymorphism: rather than hardcoding a universe level, definitions are polymorphic over universe level variables; the elaborator introduces fresh level variables and accumulates constraints. Should explain imax for Pi types (handles impredicativity: imax u 0 = 0). Should mention Lean 4's Sort u / Prop / Type u hierarchy or Agda's Level type as concrete examples.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains why Type : Type is inconsistent (Girard's/Russell's paradox): it allows self-referential type constructions that lead to logical contradictions, making it possible to prove False",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains the universe hierarchy solution: Type 0 : Type 1 : Type 2 ..., where each universe is a member of the next but not of itself; this stratification prevents the paradox",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains Prop's impredicativity: Pi (x : A) P : Prop whenever P : Prop, regardless of what universe A inhabits — this is what distinguishes Prop from Set/Type and is why it uses imax rather than max in the Pi typing rule",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains universe polymorphism: the elaborator introduces fresh universe level variables for each polymorphic definition and accumulates universe constraints; concrete level values are solved when the definition is instantiated, avoiding the need for manual universe annotations",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

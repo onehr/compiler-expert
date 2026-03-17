@@ -1,0 +1,57 @@
+{
+  "skill_name": "compiler-mir",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm designing a borrow checker for my language (similar to Rust). I've heard that using a lexical-scope-based approach causes too many false positives and that NLL (Non-Lexical Lifetimes) is better. Can you explain how NLL actually works — what does it compute, and how does it avoid the false positives that lexical lifetimes produce? Walk me through the algorithm.",
+      "expected_output": "Should explain the core problem with lexical lifetimes (borrow extends to end of scope even if no longer used), introduce the concept of liveness-based regions (sets of program points), explain the NLL algorithm: (1) compute liveness of locals via backward dataflow, (2) generate region constraints (subset relations), (3) solve constraints to find minimal regions, (4) check for conflicting loans at each program point. Should mention loans (place, borrow kind, point), the distinction between shared and mutable borrows, and give a concrete example of a program NLL accepts that lexical borrow checking rejects.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains the core problem: lexical lifetimes tie borrow duration to the enclosing scope block, causing the borrow checker to reject valid programs where the borrow is not actually used after a certain point",
+          "type": "qualitative"
+        },
+        {
+          "text": "Describes regions as sets of program points (not lexical scopes), and explains that the borrow checker computes the minimal region satisfying all subset constraints",
+          "type": "qualitative"
+        },
+        {
+          "text": "Outlines the NLL algorithm steps: liveness analysis (backward dataflow), region constraint generation, constraint solving to fixpoint, and conflict checking at each program point",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains what constitutes a conflict: a shared borrow conflicts with a mutation or move of the same place; a mutable borrow conflicts with any other use of the same place",
+          "type": "qualitative"
+        },
+        {
+          "text": "Gives a concrete example (or describes the category) of a program NLL accepts but lexical borrow checking rejects — e.g., using a borrow, then mutating after the last use of the borrow",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm implementing a MIR (mid-level IR) for my compiler and I need to handle drop elaboration. My language has RAII-style destructors. I'm confused about when exactly drops need to be inserted — especially around early returns, panics, and conditionally-initialized variables. Can you explain how drop elaboration works and what the compiler needs to track?",
+      "expected_output": "Should explain that drop elaboration inserts explicit Drop terminators into the MIR CFG at every point a value goes out of scope. Should cover the four cases: end of block, unwind paths through Call/Drop terminators (panic handling), early return paths, and partial moves. Should explain drop flags for conditionally-initialized values (a runtime boolean that guards whether Drop is actually called). Should mention drop order (LIFO — reverse initialization order). Should explain the MIR structure: Drop as a terminator with both a normal successor and an unwind successor.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Explains that drop elaboration inserts Drop terminators explicitly into the CFG at every point where a value could go out of scope, including on unwind/panic paths as well as normal paths",
+          "type": "qualitative"
+        },
+        {
+          "text": "Covers the unwind path case: Call and Drop terminators have both a normal successor and an unwind successor, and drops must be inserted on both paths",
+          "type": "qualitative"
+        },
+        {
+          "text": "Explains drop flags: for conditionally-initialized values (e.g., after a conditional branch that may or may not have initialized a variable), a boolean flag is inserted so the Drop terminator only runs if the value was actually initialized",
+          "type": "qualitative"
+        },
+        {
+          "text": "States that drop order is LIFO (reverse order of initialization) and that the elaborator must respect this ordering when inserting drops for multiple locals in the same scope",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}
