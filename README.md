@@ -8,11 +8,18 @@ Inspired by [actionbook/rust-skills](https://github.com/actionbook/rust-skills) 
 
 ## Installation
 
+### Claude Code (plugin — recommended)
+
+```bash
+/plugin marketplace add onehr/compiler-expert
+/plugin install compiler-expert@onehr-compiler-expert
+```
+
 ### Claude Code (symlink)
 
 ```bash
-git clone https://github.com/onehr/compiler-expert.git ~/.claude/skills/compiler-expert-repo
-ln -s ~/.claude/skills/compiler-expert-repo/skills/* ~/.claude/skills/
+git clone https://github.com/onehr/compiler-expert.git ~/compiler-expert
+for d in ~/compiler-expert/skills/*/; do ln -s "$d" ~/.claude/skills/$(basename "$d"); done
 ```
 
 ### Claude Code (copy)
